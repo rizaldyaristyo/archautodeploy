@@ -35,7 +35,7 @@ assign1="1"; assign2="2"; assign3="3"
 drive1="$driveName$assign1"; drive2="$driveName$assign2"; drive3="$driveName$assign3"
 echo "This'll create $drive1, $drive2, and $drive3 afterward"
 echo .
-read -p "Are you sure? " -n 1 -r
+read -p "Are you sure?(y/N) " -n 1 -r
 echo .
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
