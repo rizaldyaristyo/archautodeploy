@@ -1,9 +1,21 @@
 #!/bin/bash
+echo '
+
+
+   ____ ____ ____ 
+  ||A |||A |||D ||
+  ||__|||__|||__||
+  |/__\|/__\|/__\| by kblkLab
+
+
+
+'
+echo Checking...
 if [ -d /sys/firmware/efi ]; then
     echo OK! - UEFI Confirmed!
 else
     echo BAD - UEFI Only! Legacy BIOS not supported.
-    echo MESSAGE - If this was a mistake please comment out the ifelse statement in the script and proceed
+    echo MESSAGE - If this you think that this was a mistake please modify the ifelse statement in the script manually
     exit 1 
 fi
 if [ -f chroot.sh ]; then
@@ -13,21 +25,36 @@ else
     echo MESSAGE - Please re-clone the repo and try again as the file needed in chroot process is missing
     exit 1
 fi
-sfdisk -l
+if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+  echo OK! - IPv4 is up
+else
+  echo BAD - IPv4 is down
+  echo MESSAGE - Please connect to the internet via iwctl, if you think that this was a mistake, please modify the script ifelse statement manually
+  exit 1
+fi
 echo .
 echo .
-echo WARNING!
+echo .
+echo .
+echo ______________________________________WARNING!______________________________________
 echo THIS SCRIPT WILL WIPE YOUR SELECTED DRIVE AND INSTALL ARCH LINUX AS THE ONLY OS
 echo KEEP IN MIND THAT THIS SCRIPT IS NOT INTENDED FOR LEGACY BIOS USE AND DUAL BOOTING
 echo THIS SCRIPT DISTRIBUTED AS IS AND PLEASE PROCEED AT YOUR OWN RISK.
 echo .
-read -p "Enter desired arch username: " archUName
+echo .
+read -p "Enter the desired arch username: " archUName
 echo Your arch username will be $archUName
-echo -n Password: 
+echo .
+echo .
+echo -n Provide a password for $archUName: 
 read -s archPasswd
 echo Password received
 echo .
-read -p "Define your drive name (e.g. /dev/sda, /dev/sdb, /dev/nvme0n1): " driveName
+echo .
+echo Printing disks list...
+echo .
+sfdisk -l
+read -p "Define your drive name (e.g. /dev/sda, /dev/sdb, /dev/nvme0n1 without the partition numbering!): " driveName
 sfdisk -l $driveName
 echo .
 echo "You entered $driveName This will delete all the data in the drive"   
@@ -67,4 +94,4 @@ then
     reboot
 fi
 echo ; echo Exitting...
-exit 0
+exit 1
