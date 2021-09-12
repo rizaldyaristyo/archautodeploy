@@ -15,4 +15,6 @@ pacman -Sy grub efibootmgr os-prober --noconfirm
 grub-install --target=x86_64-efi --efi-directory=/efi/ --bootloader-id=arch_grub
 grub-mkconfig -o /boot/grub/grub.cfg
 echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
+echo Please enter a password for root user
+passwd
 exit
