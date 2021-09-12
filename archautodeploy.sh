@@ -12,6 +12,7 @@ else
     echo BAD - chroot script is missing!
     echo MESSAGE - Please re-clone the repo and try again as the file needed in chroot process is missing
     exit 1
+fi
 sfdisk -l
 echo .
 echo .
@@ -22,7 +23,8 @@ echo THIS SCRIPT DISTRIBUTED AS IS AND PLEASE PROCEED AT YOUR OWN RISK.
 echo .
 read -p "Enter desired arch username: " archUName
 echo Your arch username will be $archUName
-read -s "Enter a password: " archPasswd
+echo -n Password: 
+read -s archPasswd
 echo Password received
 echo .
 read -p "Define your drive name (e.g. /dev/sda, /dev/sdb, /dev/nvme0n1): " driveName
