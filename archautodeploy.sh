@@ -44,7 +44,7 @@ then
     echo Working...
     wipefs -a $driveName
     (echo o; echo y; echo w; echo y;) | gdisk $driveName
-    (echo n; echo ; echo ; echo +300M; echo y;  echo t; echo ; echo w) | fdisk $driveName
+    (echo n; echo ; echo ; echo +300M; echo y;  echo t; echo ;  echo 1; echo w) | fdisk $driveName
     (echo n; echo ; echo ; echo +36G; echo y;  echo t; echo ; echo 20; echo w) | fdisk $driveName
     (echo n; echo ; echo ; echo +2G; echo y; echo t; echo ; echo 19; echo w) | fdisk $driveName
     mkfs.vfat -F 32 $drive1
