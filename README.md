@@ -1,20 +1,23 @@
-# "ArchAutoDeploy" _Arch Auto Install Script_
+# "ArchAutoDeploy" _Arch Linux Auto Install Script_
 #### WARNING! Proceed at your own risk!<br>
 Tested on a virtualbox VM (Might fail on the other device idk..)<br>
-This is a bash script that auto-**install the arch linux as the only OS**<br>**and is not intended for dualbooting** also it only supports X86_64 GPT UEFI.
-As said the script **will wipe the entire disk** per confirmation prompt, please take a backup before proceed
+This is a bash script that auto-**install the arch linux as the only OS and is not intended for dualbooting**<br>
+**it only supports X86_64 GPT UEFI Capable Systems.**<br><br>
+As said the script **will wipe the entire disk** per confirmation prompt, please take a backup before proceed<br>
+No working environment included, so please install manually afterward as you prefer<br>
 We're just tinkering around and accidentaly made this so... the script might not be completed yet or lack something...
-## Recommended Minimum Requirements:
-- 1GB RAM
-- 40GB DRIVE
-- 1-2 CORE PROCESSOR
-<br><br>or just follow the official duh... but seriously you'll need around 40GB of disk<br><br>
+## Requirements:
+- ≥~512GB RAM
+- ≥40GB DRIVE
+- ≥1 CORE X86_64 PROCESSOR
+- GPT UEFI CAPABLE SYSTEM
+##### or just follow the official duh... but seriously you'll need around 40GB of disk and a GPT UEFI capable system<br><br>
 ## Arch Linux ISO and Recommended Bootable Creator
 You need to first download and make a bootable image of arch linux<br>
 [Arch Linux Download Page](https://archlinux.org/download/)<br>
-once done you can make a bootable usb via Balena Etcher<br>
+Once done, you can make a bootable usb via Balena Etcher<br>
 [Balena Etcher Download Page](https://www.balena.io/etcher/)<br>
-## Usage:
+## Installation (Usage)
 Boot to the Arch Install Medium (X86_64 UEFI)
 <br>Make sure you're connected to the internet or else this won't work
 <br>Once entered the archiso environment, enter these commands
@@ -25,6 +28,5 @@ cd archautodeploy
 chmod +xrw *.sh
 ./archautodeploy.sh
 ```
-<br>Enjoy your arch<br><br><br><br><br><br><br><br>
+<br>Enjoy your arch<br>
 ___
-Working environment is not included
