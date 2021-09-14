@@ -45,35 +45,33 @@ if [ "$checks" = true ] ; then
       exit 1
    fi
 fi
-echo .;echo .;echo .;echo .
+echo ;echo ;
 echo ______________________________________WARNING!______________________________________
 echo THIS SCRIPT WILL WIPE YOUR SELECTED DRIVE AND INSTALL ARCH LINUX AS THE ONLY OS
 echo KEEP IN MIND THAT THIS SCRIPT IS NOT INTENDED FOR LEGACY BIOS USE AND DUAL BOOTING
 echo THIS SCRIPT DISTRIBUTED AS IS AND PLEASE PROCEED AT YOUR OWN RISK.
-echo .;echo .
+echo ;echo ;
 read -p "Enter the desired arch username: " archUName
 echo Your arch username will be $archUName
-echo .;echo .
+echo ;echo ;
 echo -n Provide a password for $archUName: 
 read -s archPasswd
 echo ;
 echo Password received
-echo .;echo .
-echo Printing disks list...
-echo .
-sfdisk -l
-echo .;echo .;
+echo ;echo ;
+echo Reading disks list...
+lsscsi
 echo ;echo ;echo ;
 read -p "Define your drive name (e.g. /dev/sda, /dev/sdb, /dev/nvme0n1 without the partition numbering!): " driveName
-sfdisk -l $driveName
-echo .;echo .
-echo "You entered $driveName This will delete all the data in the drive"   
 assign1="1"; assign2="2"; assign3="3"
 drive1="$driveName$assign1"; drive2="$driveName$assign2"; drive3="$driveName$assign3"
+sfdisk -l $driveName
+echo ;echo ;
+echo "You entered $driveName This will delete all the data in the drive $driveName"
 echo "This'll create $drive1, $drive2, and $drive3 afterward"
-echo .
+echo ;
 read -p "Are you sure you want to continue?(y/N) " -n 1 -r
-echo .
+echo ;
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     echo .
