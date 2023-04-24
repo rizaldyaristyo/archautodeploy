@@ -74,33 +74,33 @@ read -p "Are you sure you want to continue?(y/N) " -n 1 -r
 echo ;
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    echo .
-    echo .
-    echo Working...
-    wipefs -a $driveName
-    (echo o; echo y; echo w; echo y;) | gdisk $driveName
-    (echo n; echo ; echo ; echo +300M; echo y;  echo t; echo ;  echo 1; echo w) | fdisk $driveName
-    (echo n; echo ; echo ; echo $rootSize; echo y;  echo t; echo ; echo 20; echo w) | fdisk $driveName
-    (echo n; echo ; echo ; echo +2G; echo y; echo t; echo ; echo 19; echo w) | fdisk $driveName
-    mkfs.vfat -F 32 $drive1
-    mkfs.ext4 $drive2
-    mkswap $drive3
-    swapon $drive3
-    mount /dev/sda2 /mnt
-    mkdir /mnt/efi
-    mount /dev/sda1 /mnt/efi
-    pacstrap /mnt base linux linux-firmware
-    genfstab -U /mnt >> /mnt/etc/fstab
-    cp chroot.sh /mnt
-    chmod +xrw /mnt/chroot.sh
-    echo Continuing in chroot...
-    export archUName
-    export archPasswd
-    arch-chroot /mnt ./chroot.sh
-    clear
-    echo chroot setup complete!
-    echo Rebooting...
-    reboot
+   echo .
+   echo .
+   echo Working...
+   wipefs -a $driveName # Wipe the drive
+   (echo o; echo y; echo w; echo y;) | gdisk $driveName # Create a new GPT partition table
+   (echo n; echo ; echo ; echo +300M; echo y;  echo t; echo ;  echo 1; echo w) | fdisk $driveName # Create EFI partition
+   (echo n; echo ; echo ; echo $rootSize; echo y;  echo t; echo ; echo 20; echo w) | fdisk $driveName # Create root partition
+   (echo n; echo ; echo ; echo +2G; echo y; echo t; echo ; echo 19; echo w) | fdisk $driveName # Create swap partition
+   mkfs.vfat -F 32 $drive1 # Format EFI partition
+   mkfs.ext4 $drive2 # Format root partition
+   mkswap $drive3 # Format swap partition
+   swapon $drive3 # Enable swap partition
+   mount /dev/sda2 /mnt # Mount root partition
+   mkdir /mnt/efi # Create EFI mount point
+   mount /dev/sda1 /mnt/efi # Mount EFI partition
+   pacstrap /mnt base linux linux-firmware # Install base system
+   genfstab -U /mnt >> /mnt/etc/fstab # Generate fstab
+   cp chroot.sh /mnt # Copy chroot script to /mnt
+   chmod +xrw /mnt/chroot.sh # Make chroot script executable
+   echo Continuing in chroot...
+   export archUName
+   export archPasswd
+   arch-chroot /mnt ./chroot.sh # Run chroot script
+   clear
+   echo chroot setup complete!
+   echo Rebooting...
+   reboot
 fi
 echo ; echo Exitting...
 exit 1
