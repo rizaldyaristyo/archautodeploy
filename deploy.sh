@@ -12,10 +12,15 @@ aad_disk_selector(){
         echo You selected $ARCHDISK
         echo Is this correct?
         read -p "(y/N) " -n 1 -r
-        if [ "$ARCHDISK" = "/dev/sr0" ]; then; echo "Try another disk!"
-        if [ "$ARCHDISK" = "/dev/loop0" ]; then; echo "Try another disk!"
+        echo ;
+        if [ "$ARCHDISK" = "/dev/sr0" ]; then
+            echo "Try another disk!"
+        elif [ "$ARCHDISK" = "/dev/loop0" ]; then
+            echo "Try another disk!"
+        fi
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            if [ -b $ARCHDISK ]; then; break
+            if [ -b $ARCHDISK ]; then
+                break
             else
                 echo Disk $ARCHDISK does not exist!
                 echo Please select a valid disk!
@@ -26,6 +31,7 @@ aad_disk_selector(){
     # BOOT PARTITION
     echo Do You already have a boot partition?
     read -p "(y/N) " -n 1 -r
+    echo ;
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         while true; do
             echo Select the disk you want to install BOOT on:
@@ -33,8 +39,10 @@ aad_disk_selector(){
             echo You selected $BOOTDISK
             echo Is this correct?
             read -p "(y/N) " -n 1 -r
+            echo ;
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                if [ -b $BOOTDISK ]; then; break
+                if [ -b $BOOTDISK ]; then
+                    break
                 else
                     echo Disk $BOOTDISK does not exist!
                     echo Please select a valid disk!
@@ -45,6 +53,7 @@ aad_disk_selector(){
         echo Do you want to create a boot partition?
         echo "If you select no, your boot partition will be the same as your root partition."
         read -p "(y/N) " -n 1 -r
+        echo ;
         while true; do
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 echo Select the disk you want to install BOOT on:
@@ -52,8 +61,10 @@ aad_disk_selector(){
                 echo You selected $BOOTDISK
                 echo Is this correct?
                 read -p "(y/N) " -n 1 -r
+                echo ;
                 if [[ $REPLY =~ ^[Yy]$ ]]; then
-                    if [ -b $BOOTDISK ]; then; break
+                    if [ -b $BOOTDISK ]; then
+                        break
                     else
                         echo Disk $BOOTDISK does not exist!
                         echo Please select a valid disk!
@@ -66,6 +77,12 @@ aad_disk_selector(){
         done
     fi
 
+    if [ "$BOOTDISK" != "$ARCHDISK" ]; then
+        ARCHDISK_IS_BOOTDISK="false"
+    else
+        ARCHDISK_IS_BOOTDISK="true"
+    fi
+
     echo CONFIRMATION
     echo -------------
     echo Root Partition: $ARCHDISK
@@ -74,6 +91,7 @@ aad_disk_selector(){
     echo ;
     echo Is this correct?
     read -p "(y/N) " -n 1 -r
+    echo ;
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo OKAY - Initiating Next Step...
         return 0
@@ -120,11 +138,13 @@ aad_disk_decider(){
         echo Are you sure you want to continue?
         echo You will lose all data on $ARCHDISK!
         read -p "(y/N) " -n 1 -r
+        echo ;
     elif [ "$ARCHDISK_DROPT" = "part" ]; then
         echo $ARCHDISK is a PARTITION of a drive!
         echo Are you sure you want to continue?
         echo You will lose all data on $ARCHDISK!
         read -p "(y/N) " -n 1 -r
+        echo ;
     fi
 
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -133,11 +153,13 @@ aad_disk_decider(){
             echo Are you sure you want to continue?
             echo You will lose all data on $BOOTDISK!
             read -p "(y/N) " -n 1 -r
+            echo ;
         elif [ "$BOOTDISK_DROPT" = "part" ]; then
             echo $BOOTDISK is a PARTITION of a drive!
             echo Are you sure you want to continue?
             echo You will lose all data on $BOOTDISK!
             read -p "(y/N) " -n 1 -r
+            echo ;
         fi
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo OKAY - Initiating Next Step...
@@ -158,21 +180,19 @@ aad_disk_sizer(){
             echo How much space do you want to allocate to your ROOT partition?
             echo "If you don't know, just press enter and the default will be used."
             read -p "(Default: 20G) " -r
-            if [ -z "$REPLY" ]; then; ARCHDISK_SIZE="20G"
-            else; ARCHDISK_SIZE=$REPLY; fi
-
-        if [ "$BOOTDISK" != "$ARCHDISK" ]; then
-            BOOTDISK_SIZE=$ARCHDISK_SIZE
-            ARCHDISK_DROPT_BOOTDISK="false"
-            if [ "$BOOTDISK_DROPT" = "drive" ]; then
-                echo How much space do you want to allocate to your BOOT partition?
-                echo "If you don't know, just press enter and the default will be used."
-                read -p "(Default: 512M) " -r
-                if [ -z "$REPLY" ]; then; BOOTDISK_SIZE="512M"
-                else; BOOTDISK_SIZE=$REPLY; return 0; fi
+            if [ -z "$REPLY" ]; then
+                ARCHDISK_SIZE="20G"
+            else
+                ARCHDISK_SIZE=$REPLY
             fi
-        else
-            ARCHDISK_DROPT_BOOTDISK="true"
+            echo How much space do you want to allocate to your BOOT partition?
+            echo "If you don't know, just press enter and the default will be used."
+            read -p "(Default: 512M) " -r
+            if [ -z "$REPLY" ]; then
+                BOOTDISK_SIZE="512M"
+            else
+                BOOTDISK_SIZE=$REPLY; return 0
+            fi
         fi
 
         echo CONFIRMATION
@@ -183,6 +203,7 @@ aad_disk_sizer(){
         echo ;
         echo Is this correct?
         read -p "(y/N) " -n 1 -r
+        echo ;
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo OKAY - Initiating Next Step...
             return 0
@@ -211,13 +232,17 @@ aad_credential_manager(){
 }
 
 aad_disk_executor(){
-    if [ "$ARCHDISK_DROPT_BOOTDISK" = "true" ]; then
-        if [ "$ARCHDISK" = "drive" ]; then
+    if [ "$ARCHDISK_IS_BOOTDISK" = "true" ]; then
+        if [ "$ARCHDISK_DROPT" = "drive" ]; then
             wipefs -a $ARCHDISK
-            (echo o;echo y;echo w;echo y;) | gdisk $ARCHDISK
+            if [ "$FIRMWARE_INTERFACE" = "bios" ]; then
+                echo -e "o\nn\np\n1\n\n\nw\n" | fdisk -c=dos $ARCHDISK
+            elif [ "$FIRMWARE_INTERFACE" = "uefi" ]; then
+                (echo o;echo y;echo w;echo y;) | gdisk $ARCHDISK
+            fi
             (echo n;echo ;echo ;echo +$BOOTDISK_SIZE;echo y;echo t;echo ;echo 1;echo w) | fdisk $ARCHDISK
             (echo n;echo ;echo ;echo +$ARCHDISK_SIZE;echo y;echo t;echo ;echo 20;echo w) | fdisk $ARCHDISK
-            if [ "$ARCHDISK_TYPE" = "scsi" ] then 
+            if [ "$ARCHDISK_TYPE" = "scsi" ]; then 
                 mkfs.fat -F 32 $ARCHDISK"1"
                 mkfs.ext4 $ARCHDISK"2"
                 mount $ARCHDISK"2" /mnt
@@ -229,7 +254,7 @@ aad_disk_executor(){
                     mount $ARCHDISK"1" /mnt/efi
                 fi
                 return 0
-            elif [ "$ARCHDISK_TYPE" = "nvme" ] then
+            elif [ "$ARCHDISK_TYPE" = "nvme" ]; then
                 mkfs.fat -F 32 $ARCHDISK"p1"
                 mkfs.ext4 $ARCHDISK"p2"
                 mount $ARCHDISK"p2" /mnt
@@ -242,7 +267,7 @@ aad_disk_executor(){
                 fi
             fi
             return 0
-        elif [ "$ARCHDISK" = "part" ]; then
+        elif [ "$ARCHDISK_DROPT" = "part" ]; then
             wipefs -a $ARCHDISK
             mkfs.fat -F 32 $ARCHDISK
             mkfs.ext4 $ARCHDISK
@@ -257,14 +282,19 @@ aad_disk_executor(){
             return 0
         fi
     else
-        if [ "$ARCHDISK" = "drive" ]; then
+        if [ "$ARCHDISK_DROPT" = "drive" ]; then
             wipefs -a $ARCHDISK
             wipefs -a $BOOTDISK
-            (echo o;echo y;echo w;echo y;) | gdisk $ARCHDISK
-            (echo o;echo y;echo w;echo y;) | gdisk $BOOTDISK
+            if [ "$FIRMWARE_INTERFACE" = "bios" ]; then
+                echo -e "o\nn\np\n1\n\n\nw\n" | fdisk -c=dos $ARCHDISK
+                echo -e "o\nn\np\n1\n\n\nw\n" | fdisk -c=dos $BOOTDISK
+            elif [ "$FIRMWARE_INTERFACE" = "uefi" ]; then
+                (echo o;echo y;echo w;echo y;) | gdisk $ARCHDISK
+                (echo o;echo y;echo w;echo y;) | gdisk $BOOTDISK
+            fi
             (echo n;echo ;echo ;echo +$BOOTDISK_SIZE;echo y;echo t;echo ;echo 1;echo w) | fdisk $BOOTDISK
             (echo n;echo ;echo ;echo +$ARCHDISK_SIZE;echo y;echo t;echo ;echo 20;echo w) | fdisk $ARCHDISK
-            if [ "$ARCHDISK_TYPE" = "scsi" ] then 
+            if [ "$ARCHDISK_TYPE" = "scsi" ]; then 
                 mkfs.fat -F 32 $BOOTDISK"1"
                 mkfs.ext4 $ARCHDISK"2"
                 mount $ARCHDISK"2" /mnt
@@ -276,7 +306,7 @@ aad_disk_executor(){
                     mount $BOOTDISK"1" /mnt/efi
                 fi
                 return 0
-            elif [ "$ARCHDISK_TYPE" = "nvme" ] then
+            elif [ "$ARCHDISK_TYPE" = "nvme" ]; then
                 mkfs.fat -F 32 $BOOTDISK"p1"
                 mkfs.ext4 $ARCHDISK"p2"
                 mount $ARCHDISK"p2" /mnt
@@ -289,7 +319,7 @@ aad_disk_executor(){
                 fi
                 return 0
             fi
-        elif [ "$ARCHDISK" = "part" ]; then
+        elif [ "$ARCHDISK_DROPT" = "part" ]; then
             wipefs -a $ARCHDISK
             mkfs.ext4 $ARCHDISK
             mount $ARCHDISK /mnt
@@ -309,51 +339,23 @@ aad_pacstraper(){
     pacstrap /mnt base linux linux-firmware
     genfstab -U /mnt >> /mnt/etc/fstab
     if [ "$FIRMWARE_INTERFACE" = "uefi" ]; then
-        echo '#!/bin/bash
-        ln -sf /usr/share/zoneinfo/UTC /mnt/etc/localtime
-        hwclock --systohc
-        pacman -Sy nano --noconfirm
-        echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
-        locale-gen
-        echo LANG=en_US.UTF-8 >> /etc/locale.conf
-        echo $ARCH_USERNAME > /etc/hostname
-        echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 my.localdomain $ARCH_USERNAME">/etc/hosts
-        pacman -Sy netctl dialog dhcpcd wpa_supplicant ifplugd --noconfirm
-        useradd -G wheel -m $ARCH_USERNAME
-        echo "$ARCH_USERNAME:$ARCH_PASSWORD" | chpasswd
-        pacman -Sy grub efibootmgr os-prober --noconfirm
-        grub-install --target=x86_64-efi --efi-directory=/efi/ --bootloader-id=arch_grub
-        grub-mkconfig -o /boot/grub/grub.cfg
-        echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
-        echo Please enter a PASSWORD for the ROOT USER before reboot
-        passwd
-        exit' > chroot.sh
+        chmod +xrw uefi_chroot.sh
+        cp uefi_chroot.sh /mnt/chroot.sh
     elif [ "$FIRMWARE_INTERFACE" = "bios" ]; then
-        echo '#!/bin/bash
-        ln -sf /usr/share/zoneinfo/UTC /mnt/etc/localtime
-        hwclock --systohc
-        pacman -Sy nano --noconfirm
-        echo en_US.UTF-8 UTF-8 >> /mnt/etc/locale.gen
-        locale-gen
-        echo LANG=en_US.UTF-8 >> /mnt/etc/locale.conf
-        echo $ARCH_USERNAME > /mnt/etc/hostname
-        echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 my.localdomain $ARCH_USERNAME">/mnt/etc/hosts
-        pacman -Sy netctl dialog dhcpcd wpa_supplicant ifplugd --noconfirm
-        useradd -G wheel -m $ARCH_USERNAME
-        echo "$ARCH_USERNAME:$ARCH_PASSWORD" | chpasswd
-        pacman -Sy grub os-prober --noconfirm
-        grub-install --target=i386-pc $BOOTDISK
-        grub-mkconfig -o /boot/grub/grub.cfg
-        echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub
-        echo Please enter a PASSWORD for the ROOT USER before reboot
-        passwd
-        exit' > chroot.sh
+        chmod +xrw bios_chroot.sh
+        cp bios_chroot.sh /mnt/chroot.sh
     fi
-    cp chroot.sh /mnt
-    chmod +xrw chroot.sh
+    if [ "$ARCHDISK_DROPT" = "part" ]; then
+        if [ "$ARCHDISK_TYPE" = "nvme" ]; then
+            BOOTDISK=${BOOTDISK%??}
+        elif [ "$ARCHDISK_TYPE" = "scsi" ]; then
+            BOOTDISK=${BOOTDISK%?}
+        fi
+    fi
     export BOOTDISK
     export ARCH_USERNAME
     export ARCH_PASSWORD
+    # arch-chroot /mnt /bin/bash -c "source /chroot.sh"
     arch-chroot /mnt ./chroot.sh
     rm -f chroot.sh /mnt/chroot.sh
 }
@@ -364,12 +366,13 @@ if [ -d /sys/firmware/efi ]; then
     aad_disk_selector
     aad_disk_decider
     aad_disk_sizer
+    aad_credential_manager
     echo "Continue with UEFI installation? There's no going back now!"
+    read -p "Are you sure? [y/N] " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "EXEC - Hold Your Horses!"
         aad_disk_executor
         aad_pacstraper
-        clear
         echo "Installation Complete!"
         echo "Please reboot your system and remove the installation media."
         echo "Then, log in as the user you created and enjoy your new Arch Linux installation!"
@@ -386,12 +389,13 @@ else
     aad_disk_selector
     aad_disk_decider
     aad_disk_sizer
+    aad_credential_manager
     echo "Continue with BIOS installation? There's no going back now!"
+    read -p "Are you sure? [y/N] " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "EXEC - Hold Your Horses!"
         aad_disk_executor
         aad_pacstraper
-        clear
         echo "Installation Complete!"
         echo "Please reboot your system and remove the installation media."
         echo "Then, log in as the user you created and enjoy your new Arch Linux installation!"
@@ -401,4 +405,5 @@ else
     else
         echo "EXIT - Have a Nice Day (Canceled)"
         exit
+    fi
 fi
