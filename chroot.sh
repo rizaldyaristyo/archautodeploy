@@ -8,9 +8,9 @@ locale-gen # gen locale
 echo LANG=en_US.UTF-8 >> /etc/locale.conf # set locale
 
 # User and Host Setup
-echo ${ARCH_USERNAME} > /etc/hostname # Set the hostname
-echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 my.localdomain ${ARCH_USERNAME}">/etc/hosts # add loopback entries to hosts file
-pacman -Sy netctl dialog dhcpcd wpa_supplicant ifplugd --noconfirm # install network managers
+echo ${ARCH_USERNAME}-arch > /etc/hostname # Set the hostname
+echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 my.localdomain ${ARCH_USERNAME}-arch">/etc/hosts # add loopback entries to hosts file
+pacman -Sy networkmanager netctl dialog dhcpcd wpa_supplicant ifplugd --noconfirm # install network managers
 useradd -G wheel -m ${ARCH_USERNAME} # create user
 echo "${ARCH_USERNAME}:${ARCH_PASSWORD}" | chpasswd # set password
 
@@ -22,11 +22,18 @@ grub-mkconfig -o /boot/grub/grub.cfg # Generate grub config
 echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub # Enable grub os-prober
 
 # Configure network to use after reboot
+#!/bin/bash
+
+# Detect the network interface in use
 networkIfaceInUse=$(ip -o -4 route show to default | awk '{print $5}')
+
+# Check if the interface exists
 if [ -d "/sys/class/net/${networkIfaceInUse}" ]; then
-    echo "creating netctl configuration for interface ${networkIfaceInUse}..."
-    echo -e "Description='A simple DHCP connection for ${networkIfaceInUse}'\nInterface=${networkIfaceInUse}\nConnection=ethernet\nIP=dhcp" > "/etc/netctl/${networkIfaceInUse}-dhcp"
-    netctl enable ${networkIfaceInUse}-dhcp
+    echo "Configuring NetworkManager for interface ${networkIfaceInUse}..."
+    systemctl enable NetworkManager
+    systemctl start NetworkManager
+    nmcli con add type ethernet ifname ${networkIfaceInUse} con-name "${networkIfaceInUse}-dhcp" ipv4.method auto
+    nmcli con up "${networkIfaceInUse}-dhcp"
 else
     echo "No active network interface found, Skipping..."
 fi
