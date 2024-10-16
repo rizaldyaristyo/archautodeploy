@@ -24,11 +24,11 @@ echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub # Enable grub os-prober
 # Configure network to use after reboot
 networkIfaceInUse=$(ip -o -4 route show to default | awk '{print $5}')
 if [ -d "/sys/class/net/${networkIfaceInUse}" ]; then
-    echo "No active network interface found, Skipping..."
-else
     echo "creating netctl configuration for interface ${networkIfaceInUse}..."
     echo -e "Description='A simple DHCP connection for ${networkIfaceInUse}'\nInterface=${networkIfaceInUse}\nConnection=ethernet\nIP=dhcp" > "/etc/netctl/${networkIfaceInUse}-dhcp"
     netctl enable ${networkIfaceInUse}-dhcp
+else
+    echo "No active network interface found, Skipping..."
 fi
 
 # Set root password
