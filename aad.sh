@@ -2,7 +2,6 @@
 
 # Copyleft 2021 Aristyo
 source aad.conf
-rootSize = ${ROOT_PARTITION_SIZE}
 
 clear
 echo '
@@ -73,7 +72,7 @@ if [[ $REPLY =~ ^[Yy]$ ]];then
     # Partitioning, tested on fdisk (util-linux 2.40.2)
     (echo n; echo; echo; echo +550M; echo y; echo t; echo ; echo 1; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # BOOT EFI partition
     (echo n; echo; echo; echo +350M; echo y; echo t; echo ; echo 4; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # BOOT BIOS partition
-    (echo n; echo; echo; echo +${rootSize}; echo y; echo t; echo; echo 20; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # root partition
+    (echo n; echo; echo; echo "+${ROOT_PARTITION_SIZE}"; echo y; echo t; echo; echo 20; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # root partition
     (echo n; echo; echo; echo +2G; echo y; echo t; echo; echo 19; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # swap partition
 
     # Formatting
