@@ -13,38 +13,37 @@ echo '
 if [ -f aad.conf ]; then
     echo OK! - aad.conf present!
 else
-    echo BAD - aad.conf is missing!
-    echo MSG - Please re-clone the repo and try again
+    echo "BAD - aad.conf is missing!"
+    echo "MSG - Please re-clone the repo and try again"
     exit 1
 fi
 if [ "$CHECKS" = true ]; then
     echo Checking...
-    # if [ -d /sys/firmware/efi ]; then
-		#   echo OK! - UEFI Confirmed!
-    # else
-    #   echo BAD - UEFI Only! Legacy BIOS not supported.
-    #   echo MSG - If this you think that this was a mistake please modify the script variables manually
-    #   exit 1 
-    # fi
-    if [ -f chroot.sh ]; then
-		  echo OK! - chroot script present!
+    if [ -d /sys/firmware/efi ]; then
+		  echo "OK! - UEFI Confirmed!"
     else
-      echo BAD - chroot script is missing!
-      echo MSG - Please re-clone the repo and try again as the file needed in chroot process is missing
+      echo "BAD - UEFI Not Supported!"
+      echo "MSG - EFI boot won't work" # TODO
+    fi
+    if [ -f chroot.sh ]; then
+		  echo "OK! - chroot script present!"
+    else
+      echo "BAD - chroot script is missing!"
+      echo "MSG - Please re-clone the repo and try again as the file needed in chroot process is missing"
 		  exit 1
     fi
     if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
-		  echo OK! - IPv4 is up
+		  echo "OK! - IPv4 is up"
 		if ping -q -c 1 -W 1 google.com >/dev/null; then
-			echo OK! - DNS is up
+			echo "OK! - DNS is up"
 		else
-			echo BAD - DNS is down
-			echo MSG - Please configure your DNS, if you think that this was a mistake, please modify the script variables manually
+			echo "BAD - DNS is down"
+			echo "MSG - Please configure your DNS, if you think that this was a mistake, please modify the script variables manually"
 			exit 1
 		fi
     else
-      echo BAD - IPv4 is down
-      echo MSG - Please connect to the internet via iwctl, if you think that this was a mistake, please modify the script variables manually
+      echo "BAD - IPv4 is down"
+      echo "MSG - Please connect to the internet via iwctl, if you think that this was a mistake, please modify the script variables manually"
       exit 1
     fi
 fi
