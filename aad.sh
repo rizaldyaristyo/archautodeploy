@@ -89,9 +89,9 @@ if [[ $REPLY =~ ^[Yy]$ ]];then
     swapon ${DRIVE_TO_USE_AND_WIPE}${infix}4 # Enable swap partition
 
     # Mounting
-    mount /dev/sda3 /mnt # Mount root partition
+    mount ${DRIVE_TO_USE_AND_WIPE}${infix}3 /mnt # Mount root partition
     mkdir /mnt/efi # Create EFI mount point
-    mount /dev/sda1 /mnt/efi # Mount EFI partition
+    mount ${DRIVE_TO_USE_AND_WIPE}${infix}1 /mnt/efi # Mount EFI partition
 
     pacstrap /mnt base linux linux-firmware # Install base system
     genfstab -U /mnt >> /mnt/etc/fstab # Generate fstab
