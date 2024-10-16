@@ -93,7 +93,16 @@ if [[ $REPLY =~ ^[Yy]$ ]];then
     mkdir /mnt/efi # Create EFI mount point
     mount ${DRIVE_TO_USE_AND_WIPE}${infix}1 /mnt/efi # Mount EFI partition
 
-    pacstrap /mnt base linux linux-firmware # Install base system
+	while true; do
+		echo "Starting pacstrap"; echo;
+    	pacstrap /mnt base linux linux-firmware # Install base system
+		if [ $? -eq 0 ]; then
+			break
+		else
+			echo ; echo "Failed to install base system, retrying in 5 seconds...";
+			sleep 5
+		fi
+	done
     genfstab -U /mnt >> /mnt/etc/fstab # Generate fstab
     cp chroot.sh /mnt # Copy chroot script to /mnt
     chmod +xrw /mnt/chroot.sh # Make chroot script executable
