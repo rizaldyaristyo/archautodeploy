@@ -10,7 +10,7 @@ echo LANG=en_US.UTF-8 >> /etc/locale.conf # set locale
 # User and Host Setup
 echo ${ARCH_USERNAME}-arch > /etc/hostname # Set the hostname
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 my.localdomain ${ARCH_USERNAME}-arch">/etc/hosts # add loopback entries to hosts file
-pacman -Sy networkmanager netctl dialog dhcpcd wpa_supplicant ifplugd --noconfirm # install network managers
+pacman -Sy networkmanager wpa_supplicant --noconfirm # install network managers
 useradd -G wheel -m ${ARCH_USERNAME} # create user
 echo "${ARCH_USERNAME}:${ARCH_PASSWORD}" | chpasswd # set password
 
@@ -25,15 +25,15 @@ echo GRUB_DISABLE_OS_PROBER=false >> /etc/default/grub # Enable grub os-prober
 #!/bin/bash
 
 # Detect the network interface in use
-networkIfaceInUse=$(ip -o -4 route show to default | awk '{print $5}')
+netIfaceInUse=$(ip -o -4 route show to default | awk '{print $5}')
 
 # Check if the interface exists
-if [ -d "/sys/class/net/${networkIfaceInUse}" ]; then
-    echo "Configuring NetworkManager for interface ${networkIfaceInUse}..."
+if [ -d "/sys/class/net/${netIfaceInUse}" ]; then
+    echo "Configuring NetworkManager for interface ${netIfaceInUse}..."
     systemctl enable NetworkManager
     systemctl start NetworkManager
-    nmcli con add type ethernet ifname ${networkIfaceInUse} con-name "${networkIfaceInUse}-dhcp" ipv4.method auto
-    nmcli con up "${networkIfaceInUse}-dhcp"
+    nmcli con add type ethernet ifname ${netIfaceInUse} con-name "${netIfaceInUse}-dhcp" ipv4.method auto
+    nmcli con up "${netIfaceInUse}-dhcp"
 else
     echo "No active network interface found, Skipping..."
 fi
