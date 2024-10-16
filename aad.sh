@@ -75,12 +75,18 @@ if [[ $REPLY =~ ^[Yy]$ ]];then
     (echo n; echo; echo; echo "+${ROOT_PARTITION_SIZE}"; echo y; echo t; echo; echo 20; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # root partition
     (echo n; echo; echo; echo +2G; echo y; echo t; echo; echo 19; echo w) | fdisk ${DRIVE_TO_USE_AND_WIPE} # swap partition
 
+    # check if working in nvme or scsi/sata
+    infix="p"
+    if [ ${DRIVE_TO_USE_AND_WIPE:0:7} = "/dev/sd" ]; then
+        infix=""
+    fi
+
     # Formatting
-    mkfs.vfat -F 32 ${DRIVE_TO_USE_AND_WIPE}1 # Format EFI partition (Tested on mkfs.fat 4.2)
+    mkfs.vfat -F 32 ${DRIVE_TO_USE_AND_WIPE}${infix}1 # Format EFI partition (Tested on mkfs.fat 4.2)
     (echo "set 2 bios_grub on") | parted ${DRIVE_TO_USE_AND_WIPE} # Format BIOS partition (Tested on GNU Parted 3.6)
-    mkfs.ext4 ${DRIVE_TO_USE_AND_WIPE}3 # Format root partition (Tested on mke2fs 1.47.1)
-    mkswap ${DRIVE_TO_USE_AND_WIPE}4 # Format swap partition
-    swapon ${DRIVE_TO_USE_AND_WIPE}4 # Enable swap partition
+    mkfs.ext4 ${DRIVE_TO_USE_AND_WIPE}${infix}3 # Format root partition (Tested on mke2fs 1.47.1)
+    mkswap ${DRIVE_TO_USE_AND_WIPE}${infix}4 # Format swap partition
+    swapon ${DRIVE_TO_USE_AND_WIPE}${infix}4 # Enable swap partition
 
     # Mounting
     mount /dev/sda3 /mnt # Mount root partition
