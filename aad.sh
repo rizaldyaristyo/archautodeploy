@@ -19,13 +19,13 @@ else
 fi
 if [ "$CHECKS" = true ]; then
     echo Checking...
-    if [ -d /sys/firmware/efi ]; then
-		echo OK! - UEFI Confirmed!
-    else
-		echo BAD - UEFI Only! Legacy BIOS not supported.
-		echo MSG - If this you think that this was a mistake please modify the script variables manually
-		exit 1 
-    fi
+    # if [ -d /sys/firmware/efi ]; then
+		#   echo OK! - UEFI Confirmed!
+    # else
+    #   echo BAD - UEFI Only! Legacy BIOS not supported.
+    #   echo MSG - If this you think that this was a mistake please modify the script variables manually
+    #   exit 1 
+    # fi
     if [ -f chroot.sh ]; then
 		  echo OK! - chroot script present!
     else
