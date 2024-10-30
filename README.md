@@ -53,16 +53,6 @@ chmod +xrw *.sh
 ./aad.sh
 ```
 
-Before doing that you can always first edit the variables value in the script (archautodeploy.sh) by using nano or vim to better suit your preferences
-
-```
-cd archautodeploy
-nano archautodeploy.sh
-```
-
-Like so, you can set the root size, skip the check procedure, etc!
-<br><br>
-
 ---
 
 <br>Enjoy your arch<br>
